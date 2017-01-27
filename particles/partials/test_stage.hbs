@@ -1,0 +1,23 @@
+{{
+    helper "m:core" "propertySpec"
+    type="AWS::CodePipeline::Pipeline.StageDeclaration"
+    Name=name
+    Actions=(
+      arrayify
+      (
+        helper "m:core" "propertySpec"
+        type="AWS::CodePipeline::Pipeline.ActionDeclaration"
+        Name="DoSomething"
+        ActionTypeId= (
+          helper "m:core" "propertySpec"
+          type="AWS::CodePipeline::Pipeline.ActionTypeId"
+          Category="Invoke"
+          Owner="AWS"
+          Provider="Lambda"
+          Version="1"
+        )
+        Configuration=(partial "test_function_config")
+      )
+    )
+    RunOrder=runOrder
+}}

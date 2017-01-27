@@ -1,0 +1,69 @@
+{{#layout}}
+  {{parameter "m:core" "base" type="String" logicalId="ArtifactS3Location"}}
+  {{parameter "m:core" "base" type="String" logicalId="SourceBucket"}}
+  {{parameter "m:core" "base" type="String" logicalId="SourceObjectKey"}}
+  {{parameter "m:core" "base" type="String" logicalId="FunctionName"}}
+  {{parameter "m:core" "arn" logicalId="PipelineRoleArn"}}
+  {{set "m:core" "true_false" parameterLogicalId="RunOptionalStage"}}
+
+  {{
+    resource "m:core" "spec"
+    type="AWS::CodePipeline::Pipeline"
+    logicalId="Pipeline"
+    ArtifactStore=(
+      helper "m:core" "propertySpec"
+      type="AWS::CodePipeline::Pipeline.ArtifactStore"
+      Location=(ref "ArtifactS3Location")
+      Type="S3"
+    )
+    RoleArn=(ref "PipelineRoleArn")
+    Stages=(
+      arrayify
+
+      (
+        helper "m:core" "propertySpec"
+        type="AWS::CodePipeline::Pipeline.StageDeclaration"
+        Name="S3Source"
+        Actions=(
+          arrayify
+          (
+            helper "m:core" "propertySpec"
+            type="AWS::CodePipeline::Pipeline.ActionDeclaration"
+            Name="TemplateSource"
+            ActionTypeId= (
+              helper "m:core" "propertySpec"
+              type="AWS::CodePipeline::Pipeline.ActionTypeId"
+              Category="Source"
+              Owner="AWS"
+              Provider="S3"
+              Version="1"
+            )
+            Configuration= (partial "source_config" s3Bucket=(ref "SourceBucket") s3ObjectKey=(ref "SourceObjectKey"))
+            OutputArtifacts= (
+              arrayify
+              (
+                helper "m:core" "propertySpec"
+                type="AWS::CodePipeline::Pipeline.OutputArtifact"
+                Name="TemplateSource"
+              )
+            )
+          )
+        )
+        RunOrder="1"
+      )
+
+      (partial "test_stage" name="Stage1" runOrder=10 functionName=(ref "FunctionName") )
+
+      (
+        fnIf
+        "RunOptionalStageIsTrueCondition"
+        (partial "test_stage" name="Stage2" runOrder=20 functionName=(ref "FunctionName") )
+        (ref "AWS::NoValue")
+      )
+
+      (partial "test_stage" name="Stage3" runOrder=30 functionName=(ref "FunctionName") )
+
+    )
+  }}
+
+{{/layout}}
