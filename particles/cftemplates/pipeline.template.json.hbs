@@ -30,7 +30,7 @@
             helper "m:core" "propertySpec"
             type="AWS::CodePipeline::Pipeline.ActionDeclaration"
             Name="TemplateSource"
-            ActionTypeId= (
+            ActionTypeId=(
               helper "m:core" "propertySpec"
               type="AWS::CodePipeline::Pipeline.ActionTypeId"
               Category="Source"
@@ -39,7 +39,7 @@
               Version="1"
             )
             Configuration=(partial "source_config" s3Bucket=(ref "SourceBucket") s3ObjectKey=(ref "SourceObjectKey"))
-            OutputArtifacts= (
+            OutputArtifacts=(
               arrayify
               (
                 helper "m:core" "propertySpec"
