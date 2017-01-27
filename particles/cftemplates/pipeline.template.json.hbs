@@ -38,7 +38,7 @@
               Provider="S3"
               Version="1"
             )
-            Configuration= (partial "source_config" s3Bucket=(ref "SourceBucket") s3ObjectKey=(ref "SourceObjectKey"))
+            Configuration=(partial "source_config" s3Bucket=(ref "SourceBucket") s3ObjectKey=(ref "SourceObjectKey"))
             OutputArtifacts= (
               arrayify
               (
